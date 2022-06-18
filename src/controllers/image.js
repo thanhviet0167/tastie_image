@@ -34,7 +34,6 @@ class ImageController{
             }
             
             else{
-                console.log(file.filename)
                 const newImageProduct = new ImageProductModel({
                     provider_id : parseInt(req.body.provider_id),
                     product_name : req.body.product_name,
