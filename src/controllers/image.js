@@ -3,6 +3,7 @@ const fs = require('fs')
 const ImageProductModel = require('../models/image');
 const image_user = require('../models/image_user');
 const image_restaurant = require('../models/image_restaurant');
+const btoa = require('btoa');
 
 const Storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -34,6 +35,7 @@ class ImageController{
             }
             
             else{
+                console.log(file.filename)
                 const newImageProduct = new ImageProductModel({
                     provider_id : parseInt(req.body.provider_id),
                     product_name : req.body.product_name,
@@ -55,17 +57,33 @@ class ImageController{
 
     static getImageProduct = async (req, res) => {
         try {
+            
             const provider_id = req.params.provider_id
             const list_image = await ImageProductModel.find({provider_id : parseInt(provider_id)}).exec();
-            console.log(list_image.length)
+            var response = []
+            for(var i = 0; i < list_image.length; i++){
+  
+                const data = btoa(list_image[i].image.data);
+                var objData = {
+                    url_str : data,
+                    provider_id : list_image[i]['provider_id'],
+                    product_name : list_image[i]['product_name']
+                }
+                response.push(objData);
+          
+                
+               
+            }
+
             res.json({
                 status : true,
-                list_image : list_image
+                response
             })
         } catch (error) {
+            console.log(error)
             res.json({
                 status : false,
-                list_image : []
+                response : []
             })
         }
     }
@@ -110,14 +128,28 @@ class ImageController{
             const user_id = req.params.user_id
             const image_info = await image_user.find({user_id : parseInt(user_id)}).exec();
             console.log(image_info.length)
+            var response = []
+            for(var i = 0; i < image_info.length; i++){
+  
+                const data = btoa(image_info[i].image.data);
+                var objData = {
+                    url_str : data,
+                    user_id : image_info[i]['user_id'],
+                    image_name : image_info[i]['image_name']
+                }
+                response.push(objData);
+          
+                
+               
+            }
             res.json({
                 status : true,
-                image_info : image_info[image_info.length-1]
+                response
             })
         } catch (error) {
             res.json({
                 status : false,
-                image_info : {}
+                response : []
             })
         }
     }
@@ -160,16 +192,31 @@ class ImageController{
         try {
             const provider_id = req.params.provider_id
             const image_info = await image_restaurant.find({provider_id : parseInt(provider_id)}).exec();
-            console.log(image_info)
+            console.log(image_info.length)
+
+            var response = []
+            for(var i = 0; i < image_info.length; i++){
+  
+                const data = btoa(image_info[i].image.data);
+                var objData = {
+                    url_str : data,
+                    provider_id : image_info[i]['provider_id'],
+                    image_name : image_info[i]['image_name']
+                }
+                response.push(objData);
+          
+                
+               
+            }
             res.json({
                 status : true,
-                image_info
+                response
             })
         } catch (error) {
             console.log(error)
             res.json({
                 status : false,
-                image_info : {}
+                response : []
             })
         }
     }
