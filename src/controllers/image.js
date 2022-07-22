@@ -4,6 +4,8 @@ const ImageProductModel = require('../models/image');
 const image_user = require('../models/image_user');
 const image_restaurant = require('../models/image_restaurant');
 const btoa = require('btoa');
+const host = require('../../config/connectMySQL')
+
 
 const Storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -14,16 +16,56 @@ const Storage = multer.diskStorage({
     },
   });
 
-const upload = multer({
+const uploadImg = multer({
     storage : Storage
 }).single('image')
 
 
 class ImageController{
+
+    static uploadImageUserSpaces = async (req, res) => {
+        try {
+
+           await host.execute(`UPDATE Tastie.User SET avatar='${req.file.location}' WHERE user_id=${req.body.user_id}`);
+            res.json({
+                status : true,
+                message : "upload success",
+                url : req.file.location
+            })
+        } catch (error) {
+            console.log(error)
+            res.json({
+                status : false,
+                message : "upload fail"
+            })
+        }
+
+    }
+
+    static uploadFileImage = (req, res) => {
+        try {
+
+            
+            res.json({
+                status : true,
+                message : "upload success",
+                url : req.file.location
+            })
+        } catch (error) {
+            console.log(error)
+            res.json({
+                status : false,
+                message : "upload fail"
+            })
+        }
+       
+    }
+
+
     static uploadImageProduct =  (req, res) => {
         
         
-        upload(req, res, (err) => {
+        uploadImg(req, res, (err) => {
             if(err)
             {
                 console.log(err)
@@ -92,7 +134,7 @@ class ImageController{
     // User
 
     static uploadImageUser = (req, res) => {
-        upload(req, res, (err) => {
+        uploadImg(req, res, (err) => {
             if(err)
             {
                 console.log(err)
@@ -157,7 +199,7 @@ class ImageController{
     // Restaurant
 
     static uploadImageRestaurant = (req, res) => {
-        upload(req, res, (err) => {
+        uploadImg(req, res, (err) => {
             if(err)
             {
                 console.log(err)
