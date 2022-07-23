@@ -4,7 +4,8 @@ const ImageProductModel = require('../models/image');
 const image_user = require('../models/image_user');
 const image_restaurant = require('../models/image_restaurant');
 const btoa = require('btoa');
-const host = require('../../config/connectMySQL')
+const host = require('../../config/connectMySQL');
+const { s3 } = require('../../config/multer');
 
 
 const Storage = multer.diskStorage({
@@ -21,12 +22,59 @@ const uploadImg = multer({
 }).single('image')
 
 
+// const deleteImg = s3.deleteObject(param, function(err, data){
+//     if (err) {
+//         console.log('err', err)
+
+//     }
+//     console.log('data', data)
+// })
+
+
 class ImageController{
 
     static uploadImageUserSpaces = async (req, res) => {
         try {
 
            await host.execute(`UPDATE Tastie.User SET avatar='${req.file.location}' WHERE user_id=${req.body.user_id}`);
+            res.json({
+                status : true,
+                message : "upload success",
+                url : req.file.location
+            })
+        } catch (error) {
+            console.log(error)
+            res.json({
+                status : false,
+                message : "upload fail"
+            })
+        }
+
+    }
+
+
+    static uploadImageProductSpaces = async (req, res) => {
+        try {
+
+           await host.execute(`UPDATE Tastie.Product SET product_image='${req.file.location}' WHERE product_id=${req.body.product_id}`);
+            res.json({
+                status : true,
+                message : "upload success",
+                url : req.file.location
+            })
+        } catch (error) {
+            console.log(error)
+            res.json({
+                status : false,
+                message : "upload fail"
+            })
+        }
+
+    }
+    static uploadImageProviderSpaces = async (req, res) => {
+        try {
+
+           await host.execute(`UPDATE Tastie.Provider SET avatar='${req.file.location}' WHERE provider_id=${req.body.provider_id}`);
             res.json({
                 status : true,
                 message : "upload success",
@@ -61,6 +109,120 @@ class ImageController{
        
     }
 
+    // Delete Img in Spaces
+
+    static deleteImgUser = async (req, res) => {
+        try {
+            const url = req.body.url
+            var a = ""
+            console.log()
+            const param = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: url.split("https://tastie-image.sgp1.digitaloceanspaces.com/")[1]
+            }
+
+            s3.deleteObject(param, function (err, data) {
+                if (err) {
+                    console.log('err', err)
+                    res.json({
+                        status : false,
+                        message : "delete fail"
+              
+                    })
+            
+                }  
+            });
+
+            await host.execute(`UPDATE Tastie.User SET avatar= null WHERE user_id=${req.body.user_id}`);
+            res.json({
+                status : true,
+                message : "delete success"
+              
+            })
+        } catch (error) {
+            res.json({
+                status : false,
+                message : "delete fail"
+      
+            })
+        }
+    }
+
+    static deleteImgProvider = async (req, res) => {
+        try {
+            const url = req.body.url
+            var a = ""
+            console.log()
+            const param = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: url.split("https://tastie-image.sgp1.digitaloceanspaces.com/")[1]
+            }
+
+            s3.deleteObject(param, function (err, data) {
+                if (err) {
+                    console.log('err', err)
+                    res.json({
+                        status : false,
+                        message : "delete fail"
+              
+                    })
+            
+                }  
+            });
+
+            await host.execute(`UPDATE Tastie.Provider SET avatar=null WHERE provider_id=${req.body.provider_id}`);
+            res.json({
+                status : true,
+                message : "delete success"
+              
+            })
+        } catch (error) {
+            res.json({
+                status : false,
+                message : "delete fail"
+      
+            })
+        }
+    }
+
+    static deleteImgProduct = async (req, res) => {
+        try {
+            const url = req.body.url
+            var a = ""
+            console.log()
+            const param = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: url.split("https://tastie-image.sgp1.digitaloceanspaces.com/")[1]
+            }
+
+            s3.deleteObject(param, function (err, data) {
+                if (err) {
+                    console.log('err', err)
+                    res.json({
+                        status : false,
+                        message : "delete fail"
+              
+                    })
+            
+                }  
+            });
+
+            await host.execute(`UPDATE Tastie.Product SET product_image=null WHERE product_id=${req.body.product_id}`);
+            res.json({
+                status : true,
+                message : "delete success"
+              
+            })
+        } catch (error) {
+            res.json({
+                status : false,
+                message : "delete fail"
+      
+            })
+        }
+    }
+
+    // ________________________________________________
 
     static uploadImageProduct =  (req, res) => {
         
