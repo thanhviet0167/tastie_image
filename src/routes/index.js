@@ -21,7 +21,7 @@ const indexRoute = (app) => {
   app.post("/delete/product/avatar", ImageController.deleteImgProduct)
 }
 
-// https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly9kMXJhbHNvZ25qbmczNy5jbG91ZGZyb250Lm5ldC81OTM5M2NhNy1iNWZhLTQxYzEtYjIxMS00ZDJlNzRiZDcwYTYuanBlZw==
+
 
 
 module.exports = indexRoute;
